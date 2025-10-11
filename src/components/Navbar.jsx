@@ -290,7 +290,7 @@ const StaggeredMenu = ({
     }
     setTimeout(() => {
       router.push(link);
-    }, 100);
+    }, 150); // Slightly longer delay to ensure menu closes
   };
 
   const handleLogout = () => {
@@ -303,7 +303,7 @@ const StaggeredMenu = ({
   };
 
   return (
-    <div className={`sm-scope z-40 ${isFixed ? 'fixed top-0 left-0 w-screen h-screen overflow-hidden' : 'w-full h-full'}`}>
+    <div className={`sm-scope z-40 ${isFixed ? 'fixed top-0 left-0 w-full h-auto' : 'w-full h-full'}`} data-open={open || undefined}>
       <div
   className={(className ? className + ' ' : '') + 'staggered-menu-wrapper relative w-full h-full pointer-events-none'}
   style={accentColor ? { ['--sm-accent']: accentColor } : undefined}
@@ -332,10 +332,16 @@ const StaggeredMenu = ({
         </div>
 
         <header
-          className="staggered-menu-header absolute top-0 left-0 w-full flex items-center justify-between p-4 bg-transparent pointer-events-none z-20"
+          className="staggered-menu-header absolute top-0 left-0 w-full flex items-center p-4 bg-transparent pointer-events-none z-20"
           aria-label="Main navigation header">
           <div
-            className="sm-logo flex items-center select-none pointer-events-auto"
+            className="sm-text flex items-center select-none pointer-events-auto"
+            aria-label="Shoppy text">
+            <span className="text-white text-xl font-bold">Shoppy</span>
+          </div>
+          
+          <div
+            className="sm-logo absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center select-none pointer-events-auto"
             aria-label="Logo">
             <img
               src={logoUrl}
@@ -349,7 +355,7 @@ const StaggeredMenu = ({
 
           <button
             ref={toggleBtnRef}
-            className={`sm-toggle relative inline-flex items-center gap-[0.3rem] bg-transparent border-0 cursor-pointer text-[#e9e9ef] font-medium leading-none overflow-visible pointer-events-auto px-3 py-3 min-h-[44px] min-w-[44px] touch-manipulation select-none ${instrumentSerif.className}`}
+            className={`sm-toggle absolute right-4 top-1/2 -translate-y-1/2 inline-flex items-center gap-[0.3rem] bg-transparent border-0 cursor-pointer text-[#e9e9ef] font-medium leading-none overflow-visible pointer-events-auto px-3 py-3 min-h-[44px] min-w-[44px] touch-manipulation select-none ${instrumentSerif.className}`}
             aria-label={open ? 'Close menu' : 'Open menu'}
             aria-expanded={open}
             aria-controls="staggered-menu-panel"
@@ -389,7 +395,7 @@ const StaggeredMenu = ({
         <aside
           id="staggered-menu-panel"
           ref={panelRef}
-          className="staggered-menu-panel absolute top-0 right-0 h-full bg-white flex flex-col p-[4em_2em_2em_2em] overflow-y-auto z-10 backdrop-blur-[12px] w-full"
+          className={`staggered-menu-panel absolute top-0 right-0 h-full bg-white flex flex-col p-[4em_2em_2em_2em] overflow-y-auto z-10 backdrop-blur-[12px] w-full ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}
           style={{ WebkitBackdropFilter: 'blur(12px)' }}
           aria-hidden={!open}>
           <div className="sm-panel-inner flex-1 flex flex-col gap-5">
@@ -404,8 +410,10 @@ const StaggeredMenu = ({
                     key={it.label + idx}>
                     {it.isLogout ? (
                       <button
-                        className={`sm-panel-item relative text-black font-semibold text-[3rem] cursor-pointer leading-none tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em] bg-transparent border-none w-full text-left flex items-center gap-4 ${instrumentSerif.className}`}
+                        className={`sm-panel-item relative text-black font-semibold text-[2.5rem] md:text-[3rem] cursor-pointer leading-none tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear no-underline pr-[1.4em] bg-transparent border-none w-full text-left flex items-center gap-4 min-h-[60px] touch-manipulation select-none pointer-events-auto ${instrumentSerif.className}`}
                         onClick={handleLogout}
+                        onTouchStart={(e) => e.stopPropagation()}
+                        style={{ touchAction: 'manipulation' }}
                         aria-label={it.ariaLabel}
                         data-index={idx + 1}>
                         
@@ -416,8 +424,10 @@ const StaggeredMenu = ({
                       </button>
                     ) : (
                       <button
-                        className={`sm-panel-item relative text-black font-semibold text-[3rem] cursor-pointer leading-none tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em] bg-transparent border-none w-full text-left ${instrumentSerif.className}`}
+                        className={`sm-panel-item relative text-black font-semibold text-[2.5rem] md:text-[3rem] cursor-pointer leading-none tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear no-underline pr-[1.4em] bg-transparent border-none w-full text-left min-h-[60px] touch-manipulation select-none pointer-events-auto ${instrumentSerif.className}`}
                         onClick={() => handleNavigation(it.link)}
+                        onTouchStart={(e) => e.stopPropagation()}
+                        style={{ touchAction: 'manipulation' }}
                         aria-label={it.ariaLabel}
                         data-index={idx + 1}>
                         <span
@@ -436,11 +446,12 @@ const StaggeredMenu = ({
 
       <style jsx>{`
         .sm-scope .staggered-menu-wrapper { position: relative; width: 100%; height: 100%; z-index: 40; }
-        .sm-scope .staggered-menu-header { position: absolute; top: 0; left: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 1rem; background: transparent; pointer-events: none; z-index: 20; }
+        .sm-scope .staggered-menu-header { position: absolute; top: 0; left: 0; width: 100%; display: flex; align-items: center; padding: 1rem; background: transparent; pointer-events: none; z-index: 20; }
         .sm-scope .staggered-menu-header > * { pointer-events: auto; }
+        .sm-scope .sm-text { display: flex; align-items: center; user-select: none; }
         .sm-scope .sm-logo { display: flex; align-items: center; user-select: none; }
         .sm-scope .sm-logo-img { display: block; height: 32px; width: auto; object-fit: contain; }
-        .sm-scope .sm-toggle { position: relative; display: inline-flex; align-items: center; gap: 0.3rem; background: transparent; border: none; cursor: pointer; color: #e9e9ef; font-weight: 500; line-height: 1; overflow: visible; }
+        .sm-scope .sm-toggle { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); display: inline-flex; align-items: center; gap: 0.3rem; background: transparent; border: none; cursor: pointer; color: #e9e9ef; font-weight: 500; line-height: 1; overflow: visible; }
         .sm-scope .sm-toggle:focus-visible { outline: 2px solid #ffffffaa; outline-offset: 4px; border-radius: 4px; }
         .sm-scope .sm-toggle-textWrap { position: relative; margin-right: 0.5em; display: inline-block; height: 1em; overflow: hidden; white-space: nowrap; width: var(--sm-toggle-width, auto); min-width: var(--sm-toggle-width, auto); }
         .sm-scope .sm-toggle-textInner { display: flex; flex-direction: column; line-height: 1; }
@@ -454,12 +465,19 @@ const StaggeredMenu = ({
         .sm-scope .sm-prelayer { position: absolute; top: 0; right: 0; height: 100%; width: 100%; transform: translateX(0); }
         .sm-scope .sm-panel-inner { flex: 1; display: flex; flex-direction: column; gap: 1.25rem; }
         .sm-scope .sm-panel-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
-        .sm-scope .sm-panel-item { position: relative; color: #000; font-weight: 600; font-size: 3rem; cursor: pointer; line-height: 1; letter-spacing: -2px; text-transform: uppercase; transition: background 0.25s, color 0.25s; display: inline-block; text-decoration: none; padding-right: 1.4em; }
+        .sm-scope .sm-panel-item { position: relative; color: #000; font-weight: 600; font-size: 3rem; cursor: pointer; line-height: 1; letter-spacing: -2px; text-transform: uppercase; transition: background 0.25s, color 0.25s; text-decoration: none; padding-right: 1.4em; }
         .sm-scope .sm-panel-itemLabel { display: inline-block; will-change: transform; transform-origin: 50% 100%; }
         .sm-scope .sm-panel-item:hover { color: var(--sm-accent, #16A34A); }
         .sm-scope .sm-panel-list[data-numbering] { counter-reset: smItem; }
         .sm-scope .sm-panel-list[data-numbering] .sm-panel-item::after { counter-increment: smItem; content: counter(smItem, decimal-leading-zero); position: absolute; top: 0.1em; right: 3.2em; font-size: 18px; font-weight: 400; color: var(--sm-accent, #16A34A); letter-spacing: 0; pointer-events: none; user-select: none; opacity: var(--sm-num-opacity, 0); }
-        @media (max-width: 768px) { .sm-scope .staggered-menu-panel { width: 100%; left: 0; right: 0; } .sm-scope .sm-prelayers { width: 100%; } .sm-scope .staggered-menu-wrapper[data-open] .sm-logo-img { filter: invert(100%); } }
+        .sm-scope[data-open] { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; }
+        @media (max-width: 768px) { 
+          .sm-scope .staggered-menu-panel { width: 100%; left: 0; right: 0; } 
+          .sm-scope .sm-prelayers { width: 100%; } 
+          .sm-scope .staggered-menu-wrapper[data-open] .sm-logo-img { filter: invert(100%); }
+          .sm-scope .sm-panel-item { font-size: 2.5rem; min-height: 60px; padding: 0.5rem 0; }
+          .sm-scope .sm-toggle { min-height: 44px; min-width: 44px; padding: 0.75rem; }
+        }
       `}</style>
     </div>
   );
@@ -505,6 +523,11 @@ const Navbar = () => {
         label: 'Home',
         link: '/',
         ariaLabel: 'Navigate to Home page'
+      },
+      {
+        label: 'About Developer',
+        link: '/about',
+        ariaLabel: 'Learn about the developer'
       }
     ];
 
@@ -559,18 +582,18 @@ const Navbar = () => {
   }
 
   return (
-    <div className={`w-full border-b-2 border-white flex justify-between items-center text-3xl font-bold ${dmSerifDisplay.className}`}>
+    <div className={`p-3 w-full border-b-2 border-white flex items-center text-3xl font-bold ${dmSerifDisplay.className} relative`}>
       <h1 className="text-white text-3xl pl-3">Shoppy</h1>
-
-      <div className="flex gap-10 text-lg font-semibold">
+      
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center">
         <img 
           src="/S-bg-fr.png" 
           alt="Shoppy logo" 
-          className="h-20 w-auto ml-100"
+          className="h-16 w-auto"
         />
       </div>
 
-      <div className={`${instrumentSerif.className} flex gap-10 text-2xl font-bold items-center`}>
+      <div className={`${instrumentSerif.className} absolute right-4 flex gap-10 text-2xl font-bold items-center`}>
         <button 
           className="nav-link relative group"
           onClick={() => router.push('/')}

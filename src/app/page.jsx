@@ -8,7 +8,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { DM_Serif_Display, Instrument_Serif } from 'next/font/google'
 import {Sacramento} from 'next/font/google'
-import HomeNav from '@/components/HomeNav.jsx'
 
 const sacramento = Sacramento({
   subsets: ['latin'],
@@ -33,7 +32,7 @@ const page = () => {
 
   return (
     <div className="flex flex-col h-screen">
-      <HomeNav />
+      <Navbar />
       <div className='flex flex-col justify-center items-center flex-1 w-full bg-gradient-to-b from-black to-stone-950 px-4 mb-20'>
         <div>
           <img 
@@ -59,7 +58,9 @@ const page = () => {
 
         <button 
           onClick={() => router.push('/login')}
-          className={`bg-white ${dmSerifDisplay.className} border-white border-2 rounded-2xl sm:rounded-3xl p-2 px-4 sm:p-1 sm:px-3 text-black text-lg sm:text-xl hover:bg-black hover:text-green-600 transition-all duration-300 ease-in`}>
+          onTouchStart={(e) => e.stopPropagation()}
+          className={`bg-white ${dmSerifDisplay.className} border-white border-2 rounded-2xl sm:rounded-3xl p-3 px-6 sm:p-2 sm:px-4 text-black text-lg sm:text-xl hover:bg-black hover:text-green-600 transition-all duration-300 ease-in min-h-[48px] touch-manipulation select-none`}
+          style={{ touchAction: 'manipulation' }}>
           Get Started.
         </button>
       </div>

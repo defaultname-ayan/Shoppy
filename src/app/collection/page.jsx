@@ -98,18 +98,19 @@ const Page = () => {
         </h1>
         
         {/* Plus button - only visible on mobile */}
-<button 
-  onClick={(e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    router.push('/add')
-  }}
-  onTouchStart={(e) => e.stopPropagation()}
-  className='block md:hidden w-12 h-12 rounded-full bg-stone-900 shadow-[inset_0_1px_2px_#ffffff50,0_2px_4px_#00000030,0_4px_8px_#00000015] hover:bg-green-600 active:bg-green-700 transition-all duration-200 flex items-center justify-center text-white text-xl font-bold cursor-pointer touch-manipulation select-none'
-  style={{ touchAction: 'manipulation' }}
->
-  +
-</button>
+        <button 
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            router.push('/add')
+          }}
+          onTouchStart={(e) => e.stopPropagation()}
+          className='md:hidden w-14 h-14 rounded-full bg-stone-900 shadow-[inset_0_1px_2px_#ffffff50,0_2px_4px_#00000030,0_4px_8px_#00000015] hover:bg-green-600 active:bg-green-700 transition-all duration-200 flex items-center justify-center text-white text-2xl font-bold cursor-pointer touch-manipulation select-none'
+          style={{ touchAction: 'manipulation' }}
+          aria-label="Add new product"
+        >
+          +
+        </button>
 
       </div>
 

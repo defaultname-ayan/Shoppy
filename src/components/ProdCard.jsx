@@ -75,7 +75,7 @@ const ProdCard = ({ data }) => {
         <button 
           onClick={urlClick}
           onTouchStart={(e) => e.stopPropagation()}
-          className="shadow-[inset_0_1px_2px_#ffffff50,0_2px_4px_#00000030,0_4px_8px_#00000015] text-xs md:text-sm font-mono bg-stone-600 hover:bg-green-600 active:bg-green-700 px-3 py-1 md:px-4 md:py-1.5 rounded-full transition-all duration-200 text-white cursor-pointer touch-manipulation select-none min-h-[32px] min-w-[80px] flex items-center justify-center"
+          className="shadow-[inset_0_1px_2px_#ffffff50,0_2px_4px_#00000030,0_4px_8px_#00000015] text-sm md:text-sm font-mono bg-stone-600 hover:bg-green-600 active:bg-green-700 px-4 py-2 md:px-4 md:py-1.5 rounded-full transition-all duration-200 text-white cursor-pointer touch-manipulation select-none min-h-[44px] min-w-[100px] flex items-center justify-center"
           style={{ touchAction: 'manipulation' }}
         >
           Buy now
