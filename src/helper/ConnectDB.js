@@ -2,14 +2,13 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import path from "path";
 
-// Load .env.local first if present, then fallback to .env
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local"), override: false });
 dotenv.config();
 
 let isConnectionInProgress = null;
 
+console.log("Loading environment variables...");
 const ConnectDB = async () => {
-    console.log("Loading environment variables...");
     const usingVar = process.env.MONGO_URI ? "MONGO_URI" : (process.env.MONGO_URL ? "MONGO_URL" : null);
     const uri = process.env.MONGO_URI || process.env.MONGO_URL;
     if (!uri) {

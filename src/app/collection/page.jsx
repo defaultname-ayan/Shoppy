@@ -91,13 +91,13 @@ const Page = () => {
       <Navbar />
       
       {/* Header with responsive plus button */}
-      <div className='flex flex-row items-center justify-center gap-4 mt-6 md:mt-10'>
+      <div className='flex flex-row items-center justify-center gap-3 mt-6 md:mt-10'>
         {/* Responsive header */}
         <h1 className={`text-3xl md:text-4xl font-light text-center ${instrumentSerif.className}`}>
           Collection
         </h1>
         
-        {/* Plus button - only visible on mobile */}
+        {/* Plus button - smaller on mobile, only visible on mobile */}
         <button 
           onClick={(e) => {
             e.preventDefault()
@@ -105,13 +105,12 @@ const Page = () => {
             router.push('/add')
           }}
           onTouchStart={(e) => e.stopPropagation()}
-          className='md:hidden w-14 h-14 rounded-full bg-stone-900 shadow-[inset_0_1px_2px_#ffffff50,0_2px_4px_#00000030,0_4px_8px_#00000015] hover:bg-green-600 active:bg-green-700 transition-all duration-200 flex items-center justify-center text-white text-2xl font-bold cursor-pointer touch-manipulation select-none'
+          className='md:hidden w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-stone-900 shadow-[inset_0_1px_2px_#ffffff50,0_2px_4px_#00000030,0_4px_8px_#00000015] hover:bg-green-600 active:bg-green-700 transition-all duration-200 flex items-center justify-center text-white text-lg sm:text-xl font-bold cursor-pointer touch-manipulation select-none'
           style={{ touchAction: 'manipulation' }}
           aria-label="Add new product"
         >
           +
         </button>
-
       </div>
 
       {/* Responsive container */}
@@ -139,3 +138,5 @@ const Page = () => {
 }
 
 export default Page
+
+

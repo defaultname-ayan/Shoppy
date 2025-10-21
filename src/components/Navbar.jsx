@@ -290,7 +290,7 @@ const StaggeredMenu = ({
     }
     setTimeout(() => {
       router.push(link);
-    }, 150); // Slightly longer delay to ensure menu closes
+    }, 150);
   };
 
   const handleLogout = () => {
@@ -305,12 +305,11 @@ const StaggeredMenu = ({
   return (
     <div className={`sm-scope z-40 ${isFixed ? 'fixed top-0 left-0 w-full h-auto' : 'w-full h-full'}`} data-open={open || undefined}>
       <div
-  className={(className ? className + ' ' : '') + 'staggered-menu-wrapper relative w-full h-full pointer-events-none'}
-  style={accentColor ? { ['--sm-accent']: accentColor } : undefined}
-  data-position={position}
-  data-open={open || undefined}>
+        className={(className ? className + ' ' : '') + 'staggered-menu-wrapper relative w-full h-full pointer-events-none'}
+        style={accentColor ? { ['--sm-accent']: accentColor } : undefined}
+        data-position={position}
+        data-open={open || undefined}>
 
-        
         <div
           ref={preLayersRef}
           className="sm-prelayers absolute top-0 right-0 bottom-0 pointer-events-none z-[5]"
@@ -332,17 +331,27 @@ const StaggeredMenu = ({
         </div>
 
         <header
-          className="staggered-menu-header absolute top-0 left-0 w-full flex items-center p-4 bg-transparent pointer-events-none z-20"
+          className="staggered-menu-header absolute top-0 left-0 w-full flex items-center justify-between px-4 py-3 bg-transparent pointer-events-none z-20 h-16"
           aria-label="Main navigation header">
+          
+          {/* Left side - Logo instead of text */}
           <div
-            className="sm-text flex items-center select-none pointer-events-auto"
-            aria-label="Shoppy text">
-            <span className="text-white text-xl font-bold">Shoppy</span>
+            className="sm-mobile-logo flex items-center select-none pointer-events-auto"
+            aria-label="Logo">
+            <img
+              src={logoUrl}
+              alt="Shoppy Logo"
+              className="sm-mobile-logo-img block h-8 w-auto object-contain cursor-pointer"
+              draggable={false}
+              onClick={() => handleNavigation('/')}
+              width={110}
+              height={24} />
           </div>
           
+          {/* Center Logo - Hidden on mobile */}
           <div
-            className="sm-logo absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center select-none pointer-events-auto"
-            aria-label="Logo">
+            className="sm-logo-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center select-none pointer-events-auto hidden"
+            aria-label="Center Logo">
             <img
               src={logoUrl}
               alt="Logo"
@@ -353,9 +362,10 @@ const StaggeredMenu = ({
               height={24} />
           </div>
 
+          {/* Menu Button - Right aligned */}
           <button
             ref={toggleBtnRef}
-            className={`sm-toggle absolute right-4 top-1/2 -translate-y-1/2 inline-flex items-center gap-[0.3rem] bg-transparent border-0 cursor-pointer text-[#e9e9ef] font-medium leading-none overflow-visible pointer-events-auto px-3 py-3 min-h-[44px] min-w-[44px] touch-manipulation select-none ${instrumentSerif.className}`}
+            className={`sm-toggle flex items-center gap-[0.3rem] bg-transparent border-0 cursor-pointer text-[#e9e9ef] font-medium leading-none overflow-visible pointer-events-auto px-3 py-3 min-h-[44px] min-w-[44px] touch-manipulation select-none ${instrumentSerif.className}`}
             aria-label={open ? 'Close menu' : 'Open menu'}
             aria-expanded={open}
             aria-controls="staggered-menu-panel"
@@ -446,12 +456,65 @@ const StaggeredMenu = ({
 
       <style jsx>{`
         .sm-scope .staggered-menu-wrapper { position: relative; width: 100%; height: 100%; z-index: 40; }
-        .sm-scope .staggered-menu-header { position: absolute; top: 0; left: 0; width: 100%; display: flex; align-items: center; padding: 1rem; background: transparent; pointer-events: none; z-index: 20; }
+        .sm-scope .staggered-menu-header { 
+          position: absolute; 
+          top: 0; 
+          left: 0; 
+          width: 100%; 
+          display: flex; 
+          align-items: center; 
+          justify-content: space-between;
+          padding: 0.75rem 1rem; 
+          background: transparent; 
+          pointer-events: none; 
+          z-index: 20;
+          height: 4rem;
+          min-height: 4rem;
+        }
         .sm-scope .staggered-menu-header > * { pointer-events: auto; }
-        .sm-scope .sm-text { display: flex; align-items: center; user-select: none; }
-        .sm-scope .sm-logo { display: flex; align-items: center; user-select: none; }
+        
+        /* Mobile logo on the left */
+        .sm-scope .sm-mobile-logo { 
+          display: flex; 
+          align-items: center; 
+          user-select: none;
+          position: relative;
+          z-index: 1;
+        }
+        .sm-scope .sm-mobile-logo-img { 
+          display: block; 
+          height: 32px; 
+          width: auto; 
+          object-fit: contain; 
+        }
+        
+        /* Center logo - hidden on mobile by default */
+        .sm-scope .sm-logo-center { 
+          display: none; 
+          align-items: center; 
+          user-select: none;
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          z-index: 1;
+        }
         .sm-scope .sm-logo-img { display: block; height: 32px; width: auto; object-fit: contain; }
-        .sm-scope .sm-toggle { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); display: inline-flex; align-items: center; gap: 0.3rem; background: transparent; border: none; cursor: pointer; color: #e9e9ef; font-weight: 500; line-height: 1; overflow: visible; }
+        
+        .sm-scope .sm-toggle { 
+          display: inline-flex; 
+          align-items: center; 
+          gap: 0.3rem; 
+          background: transparent; 
+          border: none; 
+          cursor: pointer; 
+          color: #e9e9ef; 
+          font-weight: 500; 
+          line-height: 1; 
+          overflow: visible;
+          position: relative;
+          z-index: 1;
+        }
         .sm-scope .sm-toggle:focus-visible { outline: 2px solid #ffffffaa; outline-offset: 4px; border-radius: 4px; }
         .sm-scope .sm-toggle-textWrap { position: relative; margin-right: 0.5em; display: inline-block; height: 1em; overflow: hidden; white-space: nowrap; width: var(--sm-toggle-width, auto); min-width: var(--sm-toggle-width, auto); }
         .sm-scope .sm-toggle-textInner { display: flex; flex-direction: column; line-height: 1; }
@@ -471,12 +534,37 @@ const StaggeredMenu = ({
         .sm-scope .sm-panel-list[data-numbering] { counter-reset: smItem; }
         .sm-scope .sm-panel-list[data-numbering] .sm-panel-item::after { counter-increment: smItem; content: counter(smItem, decimal-leading-zero); position: absolute; top: 0.1em; right: 3.2em; font-size: 18px; font-weight: 400; color: var(--sm-accent, #16A34A); letter-spacing: 0; pointer-events: none; user-select: none; opacity: var(--sm-num-opacity, 0); }
         .sm-scope[data-open] { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; }
+        
+        /* Mobile specific styles */
         @media (max-width: 768px) { 
           .sm-scope .staggered-menu-panel { width: 100%; left: 0; right: 0; } 
           .sm-scope .sm-prelayers { width: 100%; } 
-          .sm-scope .staggered-menu-wrapper[data-open] .sm-logo-img { filter: invert(100%); }
+          .sm-scope .staggered-menu-wrapper[data-open] .sm-mobile-logo-img { filter: invert(100%); }
           .sm-scope .sm-panel-item { font-size: 2.5rem; min-height: 60px; padding: 0.5rem 0; }
           .sm-scope .sm-toggle { min-height: 44px; min-width: 44px; padding: 0.75rem; }
+          
+          /* Mobile header layout */
+          .sm-scope .staggered-menu-header {
+            padding: 1rem;
+            height: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          }
+          
+          /* Show mobile logo on left */
+          .sm-scope .sm-mobile-logo {
+            display: flex;
+          }
+          
+          /* Hide center logo on mobile */
+          .sm-scope .sm-logo-center {
+            display: none;
+          }
+          
+          .sm-scope .sm-toggle {
+            flex: 0 0 auto;
+          }
         }
       `}</style>
     </div>
@@ -582,7 +670,7 @@ const Navbar = () => {
   }
 
   return (
-    <div className={`p-3 w-full border-b-2 border-white flex items-center text-3xl font-bold ${dmSerifDisplay.className} relative`}>
+    <div className={`p-3 w-full border-b-2 border-stone-800 flex items-center text-3xl font-bold ${dmSerifDisplay.className} relative`}>
       <h1 className="text-white text-3xl pl-3">Shoppy</h1>
       
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center">

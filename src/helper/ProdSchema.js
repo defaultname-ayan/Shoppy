@@ -16,10 +16,9 @@ const ProductSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Compound index to ensure unique URL per user
 ProductSchema.index({ url: 1, user: 1 }, { unique: true });
 
-// Re-use model if it already exists (prevents OverwriteModelError in dev)
+
 const Product = mongoose.models.Product || mongoose.model("Product", ProductSchema);
 
 export default Product;

@@ -30,13 +30,11 @@ const LoginPage = () => {
   const [error, setError] = useState('')
   const [checkingAuth, setCheckingAuth] = useState(true)
 
-  // Check if user is already authenticated
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const res = await fetch("/api/auth/me")
         if (res.ok) {
-          // User is already authenticated, redirect to collection
           router.push('/collection')
           return
         }
@@ -77,10 +75,8 @@ const LoginPage = () => {
 
       if (response.ok) {
         if (isLogin) {
-          // Redirect to collections page after successful login
           router.push('/collection')
         } else {
-          // After successful registration, switch to login mode
           setIsLogin(true)
           setFormData({ email: '', password: '', name: '' })
           setError('Registration successful! Please log in.')
@@ -95,7 +91,6 @@ const LoginPage = () => {
     }
   }
 
-  // Show loading while checking authentication
   if (checkingAuth) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-black to-stone-950 flex items-center justify-center px-4">
@@ -105,9 +100,8 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black to-stone-950 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-b from-black to-stone-950 flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="text-center mb-8">
           <img 
             src="/S-bg-fr.png" 
@@ -119,7 +113,6 @@ const LoginPage = () => {
           </h1>
         </div>
 
-        {/* Form */}
         <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
           <h2 className={`${instrumentSerif.className} text-2xl text-white text-center mb-6`}>
             {isLogin ? 'Welcome Back' : 'Create Account'}
@@ -201,6 +194,22 @@ const LoginPage = () => {
               {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
             </button>
           </div>
+
+          {isLogin && (
+            <div className="mt-6 pt-6 border-t border-white/20">
+              <div className="text-center">
+                <p className="text-white/50 text-xs mb-2 uppercase tracking-wider">Demo Credentials</p>
+                <div className="space-y-1">
+                  <p className="text-white/80 text-sm">
+                    <span className="text-white/50">Email:</span> demo@mail.com
+                  </p>
+                  <p className="text-white/80 text-sm">
+                    <span className="text-white/50">Password:</span> 123456
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 "use client"
 import React, { useRef } from 'react'
 import Navbar from '@/components/Navbar.jsx'
-import { ArrowRightIcon } from 'lucide-react'
+import { ArrowRightIcon, Plus, X } from 'lucide-react'
 import { useState, useEffect, useLayoutEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Instrument_Serif } from 'next/font/google'
@@ -17,13 +17,21 @@ const page = () => {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState('')
+  const [showManualForm, setShowManualForm] = useState(false)
+  const [manualData, setManualData] = useState({
+    name: '',
+    price: '',
+    images: '',
+    category: '',
+    url: ''
+  })
   const router = useRouter()
   
-  // Refs for GSAP animations
   const containerRef = useRef(null)
   const titleRef = useRef(null)
   const formRef = useRef(null)
   const messageRef = useRef(null)
+  const modalRef = useRef(null)
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -47,17 +55,13 @@ const page = () => {
     checkAuth()
   }, [router])
 
-  // GSAP Animations
   useLayoutEffect(() => {
     if (!loading && titleRef.current && formRef.current) {
-      // Set initial states
       gsap.set(titleRef.current, { opacity: 0, y: 50 })
       gsap.set(formRef.current, { opacity: 0, y: 30, scale: 0.95 })
 
-      // Create animation timeline
       const tl = gsap.timeline()
       
-      // Title animation - split text effect
       tl.to(titleRef.current, {
         opacity: 1,
         y: 0,
@@ -65,7 +69,6 @@ const page = () => {
         ease: "power3.out"
       })
       
-      // Form animation
       .to(formRef.current, {
         opacity: 1,
         y: 0,
@@ -74,14 +77,12 @@ const page = () => {
         ease: "power2.out"
       }, "-=0.6")
 
-      // Cleanup function
       return () => {
         tl.kill()
       }
     }
   }, [loading])
 
-  // Message animation
   useLayoutEffect(() => {
     if (message && messageRef.current) {
       const animation = gsap.fromTo(messageRef.current, 
@@ -99,12 +100,30 @@ const page = () => {
         }
       )
 
-      // Cleanup function
       return () => {
         animation.kill()
       }
     }
   }, [message])
+
+  useLayoutEffect(() => {
+    if (showManualForm && modalRef.current) {
+      gsap.fromTo(modalRef.current, 
+        { 
+          opacity: 0, 
+          scale: 0.9,
+          y: 20
+        }, 
+        { 
+          opacity: 1, 
+          scale: 1,
+          y: 0,
+          duration: 0.4,
+          ease: "power2.out"
+        }
+      )
+    }
+  }, [showManualForm])
   
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -121,7 +140,6 @@ const page = () => {
       if (res.ok) {
         setMessage("Product added successfully!")
         setInput('')
-        // Auto redirect after success message
         setTimeout(() => {
           router.push('/collection')
         }, 2000)
@@ -134,6 +152,54 @@ const page = () => {
       setMessage("Network error. Please try again.")
     }
   };
+
+  const handleManualSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!user?._id) {
+      setMessage("User not authenticated")
+      return
+    }
+
+    try {
+      const imagesArray = manualData.images.split(',').map(img => img.trim()).filter(img => img)
+
+      const res = await fetch("/api/manual", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: manualData.name,
+          price: parseFloat(manualData.price),
+          images: imagesArray,
+          category: manualData.category || "Uncategorized",
+          url: manualData.url,
+          user: user._id
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setMessage("Product added successfully!")
+        setManualData({ name: '', price: '', images: '', category: '', url: '' })
+        setShowManualForm(false)
+        setTimeout(() => {
+          router.push('/collection')
+        }, 2000)
+      } else {
+        setMessage(data.error || "Failed to add product")
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      setMessage("Network error. Please try again.")
+    }
+  };
+
+  const handleManualInputChange = (e) => {
+    setManualData({
+      ...manualData,
+      [e.target.name]: e.target.value
+    })
+  }
 
   if (loading) {
     return (
@@ -151,7 +217,6 @@ const page = () => {
         ref={containerRef}
         className="flex flex-col justify-center items-center min-h-screen w-full px-4 py-8 md:py-0"
       >
-        {/* Responsive Title */}
         <h1 
           ref={titleRef}
           className={`${instrumentSerif.className} text-white font-extralight text-center leading-tight mb-8 md:mb-10
@@ -162,12 +227,10 @@ const page = () => {
           What's the Save for today?
         </h1>
         
-        {/* Responsive Form Container */}
         <div 
           ref={formRef}
           className="relative flex flex-col sm:flex-row justify-center items-center w-full max-w-2xl gap-4 sm:gap-0"
         >
-          {/* Input Field */}
           <input 
             type="search" 
             value={input}
@@ -182,7 +245,6 @@ const page = () => {
             onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}
           />
           
-          {/* Submit Button */}
           <button 
             onClick={handleSubmit}
             className="absolute right-2 sm:right-2 top-1/2 transform -translate-y-1/2
@@ -197,8 +259,16 @@ const page = () => {
             <ArrowRightIcon className="text-white" size={15} />
           </button>
         </div>
+
+        <button
+          onClick={() => setShowManualForm(true)}
+          className="mt-6 flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl 
+            transition-all duration-200 border border-white/20 hover:border-white/40"
+        >
+          <Plus size={18} />
+          <span className="text-sm md:text-base">Add Manually</span>
+        </button>
         
-        {/* Message Display */}
         {message && (
           <div 
             ref={messageRef}
@@ -212,11 +282,113 @@ const page = () => {
           </div>
         )}
         
-        {/* Subtle instruction text */}
         <p className="text-stone-500 text-xs md:text-sm mt-4 text-center max-w-md px-4">
           Paste any product URL and we'll extract the details for your collection
         </p>
       </div>
+
+      {showManualForm && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
+          <div 
+            ref={modalRef}
+            className="bg-stone-900 rounded-2xl p-6 md:p-8 w-full max-w-md border border-white/20 my-8"
+          >
+            <div className="flex justify-between items-center mb-6">
+              <h2 className={`${instrumentSerif.className} text-white text-2xl md:text-3xl`}>
+                Add Product Manually
+              </h2>
+              <button
+                onClick={() => setShowManualForm(false)}
+                className="text-white/70 hover:text-white transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <form onSubmit={handleManualSubmit} className="space-y-4">
+              <div>
+                <label className="text-white/70 text-sm mb-2 block">Product Name *</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={manualData.name}
+                  onChange={handleManualInputChange}
+                  required
+                  className="w-full p-3 bg-black/30 border border-white/20 rounded-xl text-white 
+                    focus:outline-none focus:border-green-500/50 transition-all"
+                  placeholder="Enter product name"
+                />
+              </div>
+
+              <div>
+                <label className="text-white/70 text-sm mb-2 block">Price *</label>
+                <input
+                  type="number"
+                  name="price"
+                  value={manualData.price}
+                  onChange={handleManualInputChange}
+                  required
+                  step="0.01"
+                  min="0"
+                  className="w-full p-3 bg-black/30 border border-white/20 rounded-xl text-white 
+                    focus:outline-none focus:border-green-500/50 transition-all"
+                  placeholder="0.00"
+                />
+              </div>
+
+              <div>
+                <label className="text-white/70 text-sm mb-2 block">Image URL *</label>
+                <input
+                  type="text"
+                  name="images"
+                  value={manualData.images}
+                  onChange={handleManualInputChange}
+                  required
+                  className="w-full p-3 bg-black/30 border border-white/20 rounded-xl text-white 
+                    focus:outline-none focus:border-green-500/50 transition-all"
+                  placeholder="https://example.com/image.jpg"
+                />
+                <p className="text-white/40 text-xs mt-1">Separate multiple URLs with commas</p>
+              </div>
+
+              <div>
+                <label className="text-white/70 text-sm mb-2 block">Category</label>
+                <input
+                  type="text"
+                  name="category"
+                  value={manualData.category}
+                  onChange={handleManualInputChange}
+                  className="w-full p-3 bg-black/30 border border-white/20 rounded-xl text-white 
+                    focus:outline-none focus:border-green-500/50 transition-all"
+                  placeholder="Uncategorized"
+                />
+              </div>
+
+              <div>
+                <label className="text-white/70 text-sm mb-2 block">Product URL *</label>
+                <input
+                  type="url"
+                  name="url"
+                  value={manualData.url}
+                  onChange={handleManualInputChange}
+                  required
+                  className="w-full p-3 bg-black/30 border border-white/20 rounded-xl text-white 
+                    focus:outline-none focus:border-green-500/50 transition-all"
+                  placeholder="https://example.com/product"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-semibold 
+                  transition-all duration-200 mt-6"
+              >
+                Add Product
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
